@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const API = "http://localhost:3000";
+const API = "https://apu-tracker-proyecto.onrender.com";
 
 const SUBJECTS = {
   CNE: { name: "Expresión de Problemas y Algoritmos", short: "Expr. Algoritmos", year: 0, sem: 0, prereqs: [] },

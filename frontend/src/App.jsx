@@ -50,11 +50,107 @@ const STATUS_CONFIG = {
 };
 
 function canTake(code, statuses) {
-  const subject = SUBJECTS[code];
-  if (!subject) return false;
-  return subject.prereqs.every(p => statuses[p] === "regular" || statuses[p] === "aprobada");
+  return SUBJECTS[code].prereqs.every(p => statuses[p] === "regular" || statuses[p] === "aprobada");
 }
 
+// ── Auth Screen ───────────────────────────────────────────────────────────────
+function AuthScreen({ onLogin }) {
+  const [mode, setMode] = useState("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const submit = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch(`${API}/${mode === "login" ? "login" : "register"}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Ocurrió un error.");
+      } else {
+        localStorage.setItem("apu_token", data.token);
+        localStorage.setItem("apu_email", data.email);
+        onLogin(data.token, data.email);
+      }
+    } catch {
+      setError("No se pudo conectar con el servidor.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh", background: "#0a0f1a",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
+    }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap'); * { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
+      <div style={{
+        background: "#111827", border: "1px solid #1e293b",
+        borderRadius: 16, padding: 40, width: "100%", maxWidth: 400,
+      }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ fontSize: 36, marginBottom: 8 }}>🎓</div>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#e2e8f0" }}>Plan de Estudios APU</h1>
+          <p style={{ fontSize: 13, color: "#475569", marginTop: 4 }}>FACULTAD DE INFORMÁTICA · UNLP</p>
+        </div>
+
+        <div style={{ display: "flex", marginBottom: 24, background: "#1e293b", borderRadius: 8, padding: 4 }}>
+          {["login", "register"].map(m => (
+            <button key={m} onClick={() => { setMode(m); setError(null); }} style={{
+              flex: 1, padding: "8px 0", border: "none", borderRadius: 6, cursor: "pointer",
+              background: mode === m ? "#3b82f6" : "transparent",
+              color: mode === m ? "#fff" : "#64748b",
+              fontWeight: 600, fontSize: 13, transition: "all 0.2s",
+            }}>
+              {m === "login" ? "Iniciar sesión" : "Registrarse"}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <input
+            type="email" placeholder="Email" value={email}
+            onChange={e => setEmail(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && submit()}
+            style={{
+              background: "#1e293b", border: "1px solid #334155", borderRadius: 8,
+              padding: "12px 14px", color: "#e2e8f0", fontSize: 14, outline: "none",
+            }}
+          />
+          <input
+            type="password" placeholder="Contraseña" value={password}
+            onChange={e => setPassword(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && submit()}
+            style={{
+              background: "#1e293b", border: "1px solid #334155", borderRadius: 8,
+              padding: "12px 14px", color: "#e2e8f0", fontSize: 14, outline: "none",
+            }}
+          />
+          {error && <div style={{ color: "#f87171", fontSize: 13 }}>⚠ {error}</div>}
+          <button onClick={submit} disabled={loading} style={{
+            background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+            color: "#fff", border: "none", borderRadius: 8,
+            padding: "12px 0", fontWeight: 700, fontSize: 14,
+            cursor: loading ? "not-allowed" : "pointer",
+            opacity: loading ? 0.7 : 1, marginTop: 4,
+          }}>
+            {loading ? "Cargando..." : mode === "login" ? "Entrar" : "Crear cuenta"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Subject Card ──────────────────────────────────────────────────────────────
 function SubjectCard({ code, statuses, onCycle, saving }) {
   const subject = SUBJECTS[code];
   const status = statuses[code] || "pendiente";
@@ -68,16 +164,11 @@ function SubjectCard({ code, statuses, onCycle, saving }) {
       onClick={() => onCycle(code)}
       title={missingPrereqs.length ? `Falta: ${missingPrereqs.map(p => SUBJECTS[p]?.short || p).join(", ")}` : subject.name}
       style={{
-        background: cfg.color,
-        border: `2px solid ${cfg.border}`,
-        borderRadius: "10px",
-        padding: "10px 12px",
-        cursor: available || status !== "pendiente" ? "pointer" : "not-allowed",
+        background: cfg.color, border: `2px solid ${cfg.border}`, borderRadius: "10px",
+        padding: "10px 12px", cursor: available || status !== "pendiente" ? "pointer" : "not-allowed",
         opacity: isSaving ? 0.6 : (!available && status === "pendiente" ? 0.45 : 1),
         transition: "all 0.2s ease",
-        position: "relative",
-        boxShadow: status !== "pendiente" ? `0 0 8px ${cfg.border}44` : "none",
-        minWidth: 0,
+        boxShadow: status !== "pendiente" ? `0 0 8px ${cfg.border}44` : "none", minWidth: 0,
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 6 }}>
@@ -86,18 +177,14 @@ function SubjectCard({ code, statuses, onCycle, saving }) {
           <div style={{ fontSize: "12px", fontWeight: 600, color: cfg.text, lineHeight: 1.3 }}>
             {isSaving ? "Guardando..." : subject.short}
           </div>
-          {subject.elective && (
-            <div style={{ fontSize: "10px", marginTop: 3, color: "#f59e0b", fontWeight: 600 }}>ELECTIVA</div>
-          )}
-          {subject.note && (
-            <div style={{ fontSize: "9px", marginTop: 3, color: "#fbbf24", opacity: 0.8 }}>⚠ {subject.note}</div>
-          )}
+          {subject.elective && <div style={{ fontSize: "10px", marginTop: 3, color: "#f59e0b", fontWeight: 600 }}>ELECTIVA</div>}
+          {subject.note && <div style={{ fontSize: "9px", marginTop: 3, color: "#fbbf24", opacity: 0.8 }}>⚠ {subject.note}</div>}
         </div>
         {cfg.badge && (
           <div style={{
             background: cfg.border, color: "#fff", borderRadius: "50%",
             width: 20, height: 20, display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: "11px", fontWeight: 700, flexShrink: 0
+            justifyContent: "center", fontSize: "11px", fontWeight: 700, flexShrink: 0,
           }}>{cfg.badge}</div>
         )}
       </div>
@@ -110,67 +197,74 @@ function SubjectCard({ code, statuses, onCycle, saving }) {
   );
 }
 
+// ── Main App ──────────────────────────────────────────────────────────────────
 export default function APUTracker() {
+  const [token, setToken] = useState(() => localStorage.getItem("apu_token"));
+  const [email, setEmail] = useState(() => localStorage.getItem("apu_email"));
   const [statuses, setStatuses] = useState({});
   const [saving, setSaving] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Cargar estados desde Rails al iniciar
+  const handleLogin = (t, e) => { setToken(t); setEmail(e); };
+
+  const logout = () => {
+    localStorage.removeItem("apu_token");
+    localStorage.removeItem("apu_email");
+    setToken(null); setEmail(null); setStatuses({});
+  };
+
   useEffect(() => {
-    fetch(`${API}/materias`)
-      .then(r => r.json())
+    if (!token) { setLoading(false); return; }
+    setLoading(true);
+    fetch(`${API}/materias`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => { if (r.status === 401) { logout(); return null; } return r.json(); })
       .then(data => {
+        if (!data) return;
         const map = {};
         data.forEach(m => { map[m.codigo] = m.estado; });
         setStatuses(map);
         setLoading(false);
       })
-      .catch(() => {
-        setError("No se pudo conectar con el servidor. ¿Está corriendo Rails?");
-        setLoading(false);
-      });
-  }, []);
+      .catch(() => { setError("No se pudo conectar con el servidor."); setLoading(false); });
+  }, [token]);
 
-  // Ciclar estado y guardar en Rails
   const cycleStatus = async (code) => {
     const current = statuses[code] || "pendiente";
-    const available = canTake(code, statuses);
-    if (!available && current === "pendiente") return;
-
+    if (!canTake(code, statuses) && current === "pendiente") return;
     const next = STATUS_CYCLE[(STATUS_CYCLE.indexOf(current) + 1) % STATUS_CYCLE.length];
-
-    // Actualizar la UI inmediatamente (optimistic update)
     setStatuses(prev => ({ ...prev, [code]: next }));
     setSaving(code);
-
     try {
       if (next === "pendiente") {
-        await fetch(`${API}/materias/${code}`, { method: "DELETE" });
+        await fetch(`${API}/materias/${code}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
       } else {
         await fetch(`${API}/materias/${code}`, {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ estado: next }),
         });
       }
     } catch {
-      // Si falla, revertir
       setStatuses(prev => ({ ...prev, [code]: current }));
-      alert("Error al guardar. ¿Está corriendo el servidor Rails?");
     } finally {
       setSaving(null);
     }
   };
 
+  // Progreso: regular = 0.5 puntos, aprobada = 1 punto por materia (excluye nivelación)
+  const subjectsSinNivelacion = Object.entries(SUBJECTS).filter(([, s]) => s.sem > 0);
+  const totalSubjects = subjectsSinNivelacion.length;
+  const progressPoints = subjectsSinNivelacion.reduce((acc, [code]) => {
+    const st = statuses[code] || "pendiente";
+    return acc + (st === "aprobada" ? 1 : st === "regular" ? 0.5 : 0);
+  }, 0);
+  const progressPct = Math.round((progressPoints / totalSubjects) * 100);
   const approvedCount = Object.values(statuses).filter(s => s === "aprobada").length;
   const regularCount = Object.values(statuses).filter(s => s === "regular").length;
-  const availableCount = Object.keys(SUBJECTS).filter(c => {
-    const s = statuses[c] || "pendiente";
-    return s === "pendiente" && canTake(c, statuses);
-  }).length;
-  const totalSubjects = Object.keys(SUBJECTS).length - 3;
-  const progressPct = Math.round((approvedCount / totalSubjects) * 100);
+  const availableCount = Object.keys(SUBJECTS).filter(c => (statuses[c] || "pendiente") === "pendiente" && canTake(c, statuses)).length;
+
+  if (!token) return <AuthScreen onLogin={handleLogin} />;
 
   if (loading) return (
     <div style={{ minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748b", fontFamily: "sans-serif" }}>
@@ -191,11 +285,18 @@ export default function APUTracker() {
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
             <div style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6)", borderRadius: 10, padding: "6px 10px", fontSize: 20 }}>🎓</div>
-            <div>
+            <div style={{ flex: 1 }}>
               <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.5px" }}>Plan de Estudios — APU</h1>
               <div style={{ fontSize: 12, color: "#64748b" }}>FACULTAD DE INFORMÁTICA · UNLP</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 12, color: "#475569" }}>{email}</span>
+              <button onClick={logout} style={{
+                background: "#1e293b", border: "1px solid #334155", borderRadius: 6,
+                padding: "6px 12px", color: "#64748b", fontSize: 12, cursor: "pointer",
+              }}>Salir</button>
             </div>
           </div>
 
@@ -204,11 +305,12 @@ export default function APUTracker() {
               { label: "Disponibles", val: availableCount, color: "#3b82f6" },
               { label: "Regulares", val: regularCount, color: "#f59e0b" },
               { label: "Aprobadas", val: approvedCount, color: "#22c55e" },
-              { label: "Progreso", val: `${progressPct}%`, color: "#8b5cf6" },
+              { label: "Progreso", val: `${progressPct}%`, color: "#8b5cf6", note: "regular vale 50%" },
             ].map(s => (
               <div key={s.label} style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 10, padding: "10px 16px" }}>
                 <div style={{ fontSize: 22, fontWeight: 700, color: s.color, fontFamily: "'DM Mono', monospace" }}>{s.val}</div>
                 <div style={{ fontSize: 11, color: "#475569" }}>{s.label}</div>
+                {s.note && <div style={{ fontSize: 10, color: "#334155" }}>{s.note}</div>}
               </div>
             ))}
           </div>
@@ -238,7 +340,7 @@ export default function APUTracker() {
           return (
             <div key={label} style={{ marginBottom: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                <div style={{ background: "#1e293b", borderRadius: 6, padding: "3px 10px", fontSize: 11, color: "#64748b", fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase" }}>{yearLabel}</div>
+                <div style={{ background: "#1e293b", borderRadius: 6, padding: "3px 10px", fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase" }}>{yearLabel}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#94a3b8" }}>{label}</div>
                 <div style={{ flex: 1, height: 1, background: "#1e293b" }} />
               </div>

@@ -282,7 +282,7 @@ export default function APUTracker() {
     <div style={{ minHeight: "100vh", background: "#0a0f1a", fontFamily: "'DM Sans', 'Segoe UI', sans-serif", color: "#e2e8f0", padding: "24px 16px" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap'); * { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto" }}>
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
@@ -344,14 +344,14 @@ export default function APUTracker() {
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#94a3b8" }}>{label}</div>
                 <div style={{ flex: 1, height: 1, background: "#1e293b" }} />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10 }}>
                 {semSubjects.map(([code]) => (
                   <SubjectCard key={code} code={code} statuses={statuses} onCycle={cycleStatus} saving={saving} />
                 ))}
                 {electiveSubjects.length > 0 && (
                   <div style={{ gridColumn: "1 / -1", marginTop: 4, padding: "10px", background: "#0f1e2d", border: "1px dashed #1e3a52", borderRadius: 10 }}>
                     <div style={{ fontSize: 11, color: "#f59e0b", fontWeight: 600, marginBottom: 8 }}>★ ELEGIR UNA ELECTIVA</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 10 }}>
                       {electiveSubjects.map(([code]) => (
                         <SubjectCard key={code} code={code} statuses={statuses} onCycle={cycleStatus} saving={saving} />
                       ))}

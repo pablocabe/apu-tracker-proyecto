@@ -24,4 +24,9 @@ class UsersController < ApplicationController
     end
   end
 
+  # GET /users - BORRAR DESPUES DE USAR
+  def index
+    render json: User.all.pluck(:email, :created_at)
+  end
+  
 end

@@ -165,7 +165,7 @@ function SubjectCard({ code, statuses, onCycle, saving }) {
       title={missingPrereqs.length ? `Falta: ${missingPrereqs.map(p => SUBJECTS[p]?.short || p).join(", ")}` : subject.name}
       style={{
         background: cfg.color, border: `2px solid ${cfg.border}`, borderRadius: "10px",
-        padding: "10px 12px", cursor: available || status !== "pendiente" ? "pointer" : "not-allowed",
+        padding: "14px 16px", cursor: available || status !== "pendiente" ? "pointer" : "not-allowed",
         opacity: isSaving ? 0.6 : (!available && status === "pendiente" ? 0.45 : 1),
         transition: "all 0.2s ease",
         boxShadow: status !== "pendiente" ? `0 0 8px ${cfg.border}44` : "none", minWidth: 0,
@@ -173,8 +173,8 @@ function SubjectCard({ code, statuses, onCycle, saving }) {
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 6 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: "10px", color: "#475569", fontFamily: "monospace", marginBottom: 2 }}>{code}</div>
-          <div style={{ fontSize: "12px", fontWeight: 600, color: cfg.text, lineHeight: 1.3 }}>
+          <div style={{ fontSize: "11px", color: "#475569", fontFamily: "monospace", marginBottom: 4 }}>{code}</div>
+          <div style={{ fontSize: "14px", fontWeight: 600, color: cfg.text, lineHeight: 1.3 }}>
             {isSaving ? "Guardando..." : subject.short}
           </div>
           {subject.elective && <div style={{ fontSize: "10px", marginTop: 3, color: "#f59e0b", fontWeight: 600 }}>ELECTIVA</div>}
@@ -279,10 +279,10 @@ export default function APUTracker() {
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0f1a", fontFamily: "'DM Sans', 'Segoe UI', sans-serif", color: "#e2e8f0", padding: "24px 40px" }}>
+    <div style={{ minHeight: "100vh", background: "#0a0f1a", fontFamily: "'DM Sans', 'Segoe UI', sans-serif", color: "#e2e8f0", padding: "24px 32px" }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap'); * { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
 
-      <div style={{ maxWidth: "100%", margin: "0 auto" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
@@ -344,14 +344,14 @@ export default function APUTracker() {
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#94a3b8" }}>{label}</div>
                 <div style={{ flex: 1, height: 1, background: "#1e293b" }} />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
                 {semSubjects.map(([code]) => (
                   <SubjectCard key={code} code={code} statuses={statuses} onCycle={cycleStatus} saving={saving} />
                 ))}
                 {electiveSubjects.length > 0 && (
                   <div style={{ gridColumn: "1 / -1", marginTop: 4, padding: "10px", background: "#0f1e2d", border: "1px dashed #1e3a52", borderRadius: 10 }}>
-                    <div style={{ fontSize: 11, color: "#f59e0b", fontWeight: 600, marginBottom: 8 }}>★ ELEGIR UNA ELECTIVA</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                    <div style={{ fontSize: 12, color: "#f59e0b", fontWeight: 600, marginBottom: 8 }}>★ ELEGIR UNA ELECTIVA</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
                       {electiveSubjects.map(([code]) => (
                         <SubjectCard key={code} code={code} statuses={statuses} onCycle={cycleStatus} saving={saving} />
                       ))}

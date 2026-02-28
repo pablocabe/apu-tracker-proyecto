@@ -3,33 +3,33 @@ import { useState, useEffect } from "react";
 const API = "https://apu-tracker-proyecto.onrender.com";
 
 const SUBJECTS = {
-  CNE: { name: "Expresión de Problemas y Algoritmos", short: "Expr. Algoritmos", year: 0, sem: 0, prereqs: [] },
-  CNC: { name: "Conceptos de Organización de Computadoras", short: "Org. Computadoras (intro)", year: 0, sem: 0, prereqs: [] },
+  CNE: { name: "Expresión de Problemas y Algoritmos", short: "Expresión de Problemas y Algoritmos", year: 0, sem: 0, prereqs: [] },
+  CNC: { name: "Conceptos de Organización de Computadoras", short: "Conceptos de Organización de Computadoras", year: 0, sem: 0, prereqs: [] },
   CNM: { name: "Matemática 0", short: "Matemática 0", year: 0, sem: 0, prereqs: [] },
-  SI106: { name: "Conceptos de Algoritmos, Datos y Programas", short: "Algoritmos y Datos", year: 1, sem: 1, prereqs: ["CNE","CNC","CNM"] },
-  SI104: { name: "Organización de Computadoras", short: "Org. Computadoras", year: 1, sem: 1, prereqs: ["CNE","CNC","CNM"] },
+  SI106: { name: "Conceptos de Algoritmos, Datos y Programas", short: "Conceptos de Algoritmos, Datos y Programas", year: 1, sem: 1, prereqs: ["CNE","CNC","CNM"] },
+  SI104: { name: "Organización de Computadoras", short: "Organización de Computadoras", year: 1, sem: 1, prereqs: ["CNE","CNC","CNM"] },
   SI101: { name: "Matemática 1", short: "Matemática 1", year: 1, sem: 1, prereqs: ["CNE","CNC","CNM"] },
-  SI107: { name: "Taller de Programación", short: "Taller de Prog.", year: 1, sem: 2, prereqs: ["SI106"] },
-  SI105: { name: "Arquitectura de Computadoras", short: "Arquitectura", year: 1, sem: 2, prereqs: ["SI104"] },
+  SI107: { name: "Taller de Programación", short: "Taller de Programación", year: 1, sem: 2, prereqs: ["SI106"] },
+  SI105: { name: "Arquitectura de Computadoras", short: "Arquitectura de Computadoras", year: 1, sem: 2, prereqs: ["SI104"] },
   SI102: { name: "Matemática 2", short: "Matemática 2", year: 1, sem: 2, prereqs: ["SI101"] },
-  SI209: { name: "Fundamentos de Organización de Datos", short: "Fund. Org. Datos", year: 2, sem: 3, prereqs: ["SI107"] },
-  SI203: { name: "Algoritmos y Estructuras de Datos", short: "Algoritmos y Estruct.", year: 2, sem: 3, prereqs: ["SI102","SI107"] },
-  SI207: { name: "Seminario de Lenguajes", short: "Seminario Lenguajes", year: 2, sem: 3, prereqs: ["SI107"] },
-  SI210: { name: "Diseño de Bases de Datos", short: "Diseño BD", year: 2, sem: 4, prereqs: ["SI209"] },
-  SI202: { name: "Ingeniería de Software 1", short: "Ing. Software 1", year: 2, sem: 4, prereqs: ["SI107"] },
-  SI206: { name: "Orientación a Objetos 1", short: "OO 1", year: 2, sem: 4, prereqs: ["SI107"] },
-  SI204: { name: "Introducción a los Sistemas Operativos", short: "Sist. Operativos", year: 2, sem: 4, prereqs: ["SI107","SI105"] },
+  SI209: { name: "Fundamentos de Organización de Datos", short: "Fundamentos de Organización de Datos", year: 2, sem: 3, prereqs: ["SI107"] },
+  SI203: { name: "Algoritmos y Estructuras de Datos", short: "Algoritmos y Estructuras de Datos", year: 2, sem: 3, prereqs: ["SI102","SI107"] },
+  SI207: { name: "Seminario de Lenguajes", short: "Seminario de Lenguajes", year: 2, sem: 3, prereqs: ["SI107"] },
+  SI210: { name: "Diseño de Bases de Datos", short: "Diseño de Bases de Datos", year: 2, sem: 4, prereqs: ["SI209"] },
+  SI202: { name: "Ingeniería de Software 1", short: "Ingeniería de Software 1", year: 2, sem: 4, prereqs: ["SI107"] },
+  SI206: { name: "Orientación a Objetos 1", short: "Orientación a Objetos 1", year: 2, sem: 4, prereqs: ["SI107"] },
+  SI204: { name: "Introducción a los Sistemas Operativos", short: "Introducción a los Sistemas Operativos", year: 2, sem: 4, prereqs: ["SI107","SI105"] },
   SI208: { name: "Taller de Lecto-comprensión en Inglés", short: "Inglés", year: 2, sem: 4, prereqs: ["CNE","CNC","CNM"], note: "Obligatorio aprobar antes de 3er año" },
   SI308: { name: "Matemática 3", short: "Matemática 3", year: 3, sem: 5, prereqs: ["SI102"] },
-  SI302: { name: "Ingeniería de Software 2", short: "Ing. Software 2", year: 3, sem: 5, prereqs: ["SI202","SI208"] },
-  SI307: { name: "Orientación a Objetos 2", short: "OO 2", year: 3, sem: 5, prereqs: ["SI206","SI208"] },
-  SI301: { name: "Programación Concurrente", short: "Prog. Concurrente", year: 3, sem: 6, prereqs: ["SI204","SI207","SI208"] },
-  SI305: { name: "Proyecto de Software", short: "Proyecto Software", year: 3, sem: 6, prereqs: ["SI210","SI202","SI203","SI207","SI208","SI206"] },
-  "07301": { name: "Taller de Tecnologías de Producción de Software", short: "Taller TPS", year: 3, sem: 6, prereqs: ["SI210","SI203","SI204","SI206","SI208","SI302"] },
-  SI306: { name: "Conceptos y Paradigmas de Lenguajes", short: "Paradigmas", year: 3, sem: 5, prereqs: ["SI203","SI207","SI208"], elective: true },
-  SI304: { name: "Redes y Comunicaciones", short: "Redes", year: 3, sem: 6, prereqs: ["SI102","SI204","SI208"], elective: true },
-  S0303: { name: "Bases de Datos I", short: "BD I", year: 3, sem: 5, prereqs: ["SI210","SI208"], elective: true },
-  S0410: { name: "Sistemas y Organizaciones", short: "Sist. y Org.", year: 3, sem: 6, prereqs: ["SI210","SI202","SI208"], elective: true },
+  SI302: { name: "Ingeniería de Software 2", short: "Ingeniería de Software 2", year: 3, sem: 5, prereqs: ["SI202","SI208"] },
+  SI307: { name: "Orientación a Objetos 2", short: "Orientación a Objetos 2", year: 3, sem: 5, prereqs: ["SI206","SI208"] },
+  SI301: { name: "Programación Concurrente", short: "Programación Concurrente", year: 3, sem: 6, prereqs: ["SI204","SI207","SI208"] },
+  SI305: { name: "Proyecto de Software", short: "Proyecto de Software", year: 3, sem: 6, prereqs: ["SI210","SI202","SI203","SI207","SI208","SI206"] },
+  "07301": { name: "Taller de Tecnologías de Producción de Software", short: "Taller de Tecnologías de Producción de Software", year: 3, sem: 6, prereqs: ["SI210","SI203","SI204","SI206","SI208","SI302"] },
+  SI306: { name: "Conceptos y Paradigmas de Lenguajes", short: "Conceptos y Paradigmas de Lenguajes", year: 3, sem: 5, prereqs: ["SI203","SI207","SI208"], elective: true },
+  SI304: { name: "Redes y Comunicaciones", short: "Redes y Comunicaciones", year: 3, sem: 6, prereqs: ["SI102","SI204","SI208"], elective: true },
+  S0303: { name: "Bases de Datos I", short: "Bases de Datos I", year: 3, sem: 5, prereqs: ["SI210","SI208"], elective: true },
+  S0410: { name: "Sistemas y Organizaciones", short: "Sistemas y Organizaciones", year: 3, sem: 6, prereqs: ["SI210","SI202","SI208"], elective: true },
 };
 
 const SEMESTERS = [
@@ -178,18 +178,18 @@ function SubjectCard({ code, statuses, onCycle, saving }) {
             {isSaving ? "Guardando..." : subject.short}
           </div>
           {subject.elective && <div style={{ fontSize: "10px", marginTop: 3, color: "#f59e0b", fontWeight: 600 }}>ELECTIVA</div>}
-          {subject.note && <div style={{ fontSize: "9px", marginTop: 3, color: "#fbbf24", opacity: 0.8 }}>⚠ {subject.note}</div>}
+          {subject.note && <div style={{ fontSize: "11px", marginTop: 3, color: "#fbbf24", opacity: 0.8 }}>⚠ {subject.note}</div>}
         </div>
         {cfg.badge && (
           <div style={{
             background: cfg.border, color: "#fff", borderRadius: "50%",
-            width: 20, height: 20, display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: "11px", fontWeight: 700, flexShrink: 0,
+            width: 22, height: 22, display: "flex", alignItems: "center",
+            justifyContent: "center", fontSize: "12px", fontWeight: 700, flexShrink: 0,
           }}>{cfg.badge}</div>
         )}
       </div>
       {!available && status === "pendiente" && missingPrereqs.length > 0 && (
-        <div style={{ fontSize: "9px", color: "#475569", marginTop: 4 }}>
+        <div style={{ fontSize: "11px", color: "#475569", marginTop: 4 }}>
           Falta: {missingPrereqs.slice(0,2).map(p => SUBJECTS[p]?.short || p).join(", ")}{missingPrereqs.length > 2 ? "..." : ""}
         </div>
       )}
@@ -252,7 +252,6 @@ export default function APUTracker() {
     }
   };
 
-  // Progreso: regular = 0.5 puntos, aprobada = 1 punto por materia (excluye nivelación)
   const subjectsSinNivelacion = Object.entries(SUBJECTS).filter(([, s]) => s.sem > 0);
   const totalSubjects = subjectsSinNivelacion.length;
   const progressPoints = subjectsSinNivelacion.reduce((acc, [code]) => {
@@ -283,7 +282,6 @@ export default function APUTracker() {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap'); * { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
 
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        {/* Header */}
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6, flexWrap: "wrap" }}>
             <div style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6)", borderRadius: 10, padding: "6px 10px", fontSize: 20 }}>🎓</div>
@@ -320,7 +318,6 @@ export default function APUTracker() {
           </div>
         </div>
 
-        {/* Leyenda */}
         <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
           <span style={{ fontSize: 12, color: "#475569" }}>Clic para cambiar estado:</span>
           {Object.entries(STATUS_CONFIG).map(([s, c]) => (
@@ -331,7 +328,6 @@ export default function APUTracker() {
           ))}
         </div>
 
-        {/* Semestres */}
         {SEMESTERS.map(({ label, sems, yearLabel }) => {
           const semSubjects = Object.entries(SUBJECTS).filter(([, s]) => sems.includes(s.sem) && !s.elective);
           const electivesHere = sems.includes(5) || sems.includes(6);
@@ -344,14 +340,14 @@ export default function APUTracker() {
                 <div style={{ fontSize: 13, fontWeight: 600, color: "#94a3b8" }}>{label}</div>
                 <div style={{ flex: 1, height: 1, background: "#1e293b" }} />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
                 {semSubjects.map(([code]) => (
                   <SubjectCard key={code} code={code} statuses={statuses} onCycle={cycleStatus} saving={saving} />
                 ))}
                 {electiveSubjects.length > 0 && (
                   <div style={{ gridColumn: "1 / -1", marginTop: 4, padding: "10px", background: "#0f1e2d", border: "1px dashed #1e3a52", borderRadius: 10 }}>
                     <div style={{ fontSize: 12, color: "#f59e0b", fontWeight: 600, marginBottom: 8 }}>★ ELEGIR UNA ELECTIVA</div>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
                       {electiveSubjects.map(([code]) => (
                         <SubjectCard key={code} code={code} statuses={statuses} onCycle={cycleStatus} saving={saving} />
                       ))}
